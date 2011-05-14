@@ -1,0 +1,6 @@
+#ifndef SURYABREW_BID
+#define SURYABREW_BID
+
+#define AEECLSID_SURYABREW        0x010A2906
+
+#endif //SURYABREW_BID

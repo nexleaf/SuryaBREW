@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BREWRes Name="suryabrew" VERSION="1">
+<Strings Encoding="Unicode">
+	<String Id="1001" Name="IDS_STRING_TITLE">
+		<Text>Surya Filter Capture</Text>
+	</String>
+	<String Id="1002" Name="IDS_STRING_CAMERA">
+		<Text>CAMERA</Text>
+	</String>
+	<String Id="1003" Name="IDS_STRING_TEMP">
+		<Text>TEMPERATURE</Text>
+	</String>
+	<String Id="1004" Name="IDS_STRING_BACK">
+		<Text>Back</Text>
+	</String>
+	<String Id="1005" Name="IDS_STRING_STARTTEMP">
+		<Text>START Temp</Text>
+	</String>
+	<String Id="1006" Name="IDS_STRING_STOPTEMP">
+		<Text>STOP Temp</Text>
+	</String>
+	<String Id="1007" Name="IDS_STRING_TAKEPHOTO">
+		<Text>TAKE PHOTO</Text>
+	</String>
+	<String Id="1008" Name="IDS_STRING_ACCEPTPHOTO">
+		<Text>Accept Photo?</Text>
+	</String>
+	<String Id="1009" Name="IDS_STRING_TEMPDBGFMT">
+		<Text>%d %d %d</Text>
+	</String>
+	<String Id="1010" Name="IDS_STRING_TEMPFMT">
+		<Text>%d def F.</Text>
+	</String>
+</Strings>
+<Objects MimeType="image/bmp">
+	<Object Id="5001" Name="IDI_OBJECT_CHECKYES">
+		<File>.\images\checkyes.bmp</File>
+	</Object>
+	<Object Id="5002" Name="IDI_OBJECT_CHECKNO">
+		<File>.\images\checkno.bmp</File>
+	</Object>
+</Objects>
+<Binaries>
+	<Binary Id="9001" Name="IDB_BINARY_8KHZ_400HZ_16BIT_05">
+		<File>.\images\8kHz_400Hz_signed-16bit_05.raw</File>
+	</Binary>
+	<Binary Id="9002" Name="IDB_BINARY_8KHZ_400HZ_16BIT_10">
+		<File>.\images\8kHz_400Hz_signed-16bit_10.raw</File>
+	</Binary>
+	<Binary Id="9003" Name="IDB_BINARY_8KHZ_400HZ_16BIT_15">
+		<File>.\images\8kHz_400Hz_signed-16bit_15.raw</File>
+	</Binary>
+	<Binary Id="9004" Name="IDB_BINARY_8KHZ_400HZ_16BIT_01">
+		<File>.\images\8kHz_400Hz_signed-16bit_01.raw</File>
+	</Binary>
+</Binaries>
+</BREWRes>
