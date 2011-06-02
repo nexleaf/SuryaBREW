@@ -2,4 +2,5 @@
 Put entire contents into:
 Program Files\BREW 3.1.5\sdk\examples
 
+NOTE: multipeek library was downloaded from BREW Forums. There was no license attached. We are using it to create a multipart HTTP post with text and an image.
 

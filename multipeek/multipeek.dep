@@ -1,0 +1,27 @@
+c:\PROGRA~2\BREW31~1.4\sdk\src\AEEAPP~1.o:  \
+ c:/PROGRA~2/BREW31~1.4/sdk/src/AEEAPP~1.C \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEE.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEGroupIDs.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEClassIDs.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEError.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEComdef.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEInterface.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEQueryInterface.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEShell.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEVCodes.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEDisp.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEBitmap.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEFont.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEImage.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEESoundPlayer.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEESound.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEResourceCtl.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEControls_res.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEELngCode.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEStdLib.h \
+  C:/gnude/lib/gcc-lib/arm-elf/3.3.1/include/stddef.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEOldVaList.h \
+  C:/gnude/lib/gcc-lib/arm-elf/3.3.1/include/stdarg.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEAppGen.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/AEEModGen.h \
+  C:/PROGRA~2/BREW31~1.4/sdk/inc/nmdef.h

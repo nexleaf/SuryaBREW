@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BREWRes Name="multipeek" VERSION="1">
+<BREWMif>
+	<Module Encoding="ISOLATIN1">
+		<Privileges/>
+		<Exported>
+			<Class CLSID="0x010a2905"/>
+		</Exported>
+		<MimeTypes/>
+		<Imported/>
+		<ACLs>
+			<ACL Type="fs"/>
+		</ACLs>
+	</Module>
+	<Applets/>
+</BREWMif>
+</BREWRes>

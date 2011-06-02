@@ -1,0 +1,6 @@
+#ifndef MULTIPEEK_BID
+#define MULTIPEEK_BID
+
+#define AEECLSID_MULTIPEEK    	0x010a2905
+
+#endif //MULTIPEEK_BID
