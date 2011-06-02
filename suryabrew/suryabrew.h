@@ -81,6 +81,7 @@ typedef struct _suryabrew {
     boolean do_upload_delete_file;  // delete the image and DB row after upload
 	boolean do_gps;                 // run the gps subsystem
 	boolean allow_volume;          // allow someone to change the volume
+	boolean enable_camera;         // whether the camera is enabled and accessible
 
 	SuryaModeType SuryaMode; // Home screen, taking pictures, or taking temp
 

@@ -92,6 +92,7 @@ void suryabrew_TempSetActive(suryabrew* pMe, boolean active)
             IVOCODER_VocInStop(pMe->pIVocoder);
             IVOCODER_VocOutStop(pMe->pIVocoder);
 
+			// Try again since sound does not always seem to stop
 			IVOCODER_VocOutReset(pMe->pIVocoder); 
 			IVOCODER_VocInReset(pMe->pIVocoder); 
 
@@ -201,6 +202,10 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 
 static void PlayedDataCB(uint16 numFrames, void * usrPtr) {
    suryabrew *pMe = (suryabrew *)usrPtr;
+   //
+   // NOTE!!! This NEVER seems to get called no matter what I do!
+   //
+
   // DBGPRINTF("PlayedData %d", numFrames);
    //pMe->playing = FALSE;
    //if (pMe->soundMode != SOUNDMODE_PLAYBACK)
@@ -214,6 +219,9 @@ static void NeedDataCB(uint16 numFrames, void * usrPtr) {
    suryabrew *pMe = (suryabrew *)usrPtr;
    DBGPRINTF("NeedData %d", numFrames);
 
+   //
+   // NOTE!!! This NEVER seems to get called no matter what I do!
+   //
 
    // Display pause message if ivocoder needs data
    //if (pMe->tempVocOn) {

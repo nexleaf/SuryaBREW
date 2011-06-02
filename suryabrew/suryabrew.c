@@ -336,17 +336,21 @@ static boolean suryabrew_HandleEventDefaultMode(suryabrew* pMe, AEEEvent eCode, 
 			break;
 		case AVK_SOFT1:
 			// on the left key start the camera
-				// INIT Camera
-			suryabrew_DrawPhotoScreen(pMe);
-			suryabrew_CameraLoad(pMe);
-			if (pMe->CameraMode == CAM_MODE_READY)
+			if (pMe->enable_camera)
 			{
-				//					suryabrew_CameraInitSnapshot(pMe);
-				DBGPRINTF("Running Camera Code!!!");
-				suryabrew_CameraInitPreview(pMe);
-				pMe->SuryaMode = SURYAMODE_CAMERA;
+				// INIT Camera
+				suryabrew_DrawPhotoScreen(pMe);
+				suryabrew_CameraLoad(pMe);
+				if (pMe->CameraMode == CAM_MODE_READY)
+				{
+					//					suryabrew_CameraInitSnapshot(pMe);
+					DBGPRINTF("Running Camera Code!!!");
+					suryabrew_CameraInitPreview(pMe);
+					pMe->SuryaMode = SURYAMODE_CAMERA;
+				}
+				return(TRUE);
 			}
-			return(TRUE);
+			break;
 		case AVK_SOFT2:
 			// on the right key, start the temp sensor
 			DBGPRINTF("Running temp code!!!");
@@ -546,7 +550,8 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->do_gps = 0;
 	pMe->do_upload = 0;
 	pMe->do_upload_delete_file = 1;
-	pMe->allow_volume = 0;
+	pMe->allow_volume = 1;
+	pMe->enable_camera = 1;
 
 	///////////////////////
 	// DISPLAY INIT
@@ -728,14 +733,16 @@ static void suryabrew_DrawScreen(suryabrew * pMe)
 		-1, 0, 0, NULL,
 		IDF_ALIGN_CENTER | IDF_ALIGN_TOP);
 
-	ISHELL_LoadResString(pMe->pIShell, SURYABREW_RES_FILE,
-		IDS_STRING_CAMERA,
-		szBuf, sizeof(szBuf));
-	IDISPLAY_DrawText(pMe->pIDisplay,
-		AEE_FONT_BOLD, 
-		szBuf, 
-		-1, 0, 0, NULL,
-		IDF_ALIGN_BOTTOM | IDF_ALIGN_LEFT);
+	if (pMe->enable_camera == 1) {
+		ISHELL_LoadResString(pMe->pIShell, SURYABREW_RES_FILE,
+			IDS_STRING_CAMERA,
+			szBuf, sizeof(szBuf));
+		IDISPLAY_DrawText(pMe->pIDisplay,
+			AEE_FONT_BOLD, 
+			szBuf, 
+			-1, 0, 0, NULL,
+			IDF_ALIGN_BOTTOM | IDF_ALIGN_LEFT);
+	}
 
 	ISHELL_LoadResString(pMe->pIShell, SURYABREW_RES_FILE,
 		IDS_STRING_TEMP,
