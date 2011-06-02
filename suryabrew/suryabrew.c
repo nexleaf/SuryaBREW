@@ -551,7 +551,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->do_upload = 0;
 	pMe->do_upload_delete_file = 1;
 	pMe->allow_volume = 1;
-	pMe->enable_camera = 1;
+	pMe->enable_camera = 0;
 
 	///////////////////////
 	// DISPLAY INIT
