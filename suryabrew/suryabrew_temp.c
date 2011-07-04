@@ -136,14 +136,14 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
       return;
    }
    // Read in each frame and send to network
-   DBGPRINTF("Entering HAVEDATA !!!");
+   //DBGPRINTF("Entering HAVEDATA !!!");
    for (i = 0; i < numFrames; i++) {
       status = IVOCODER_VocInRead(pMe->pIVocoder,
                                   &rate, &length, pMe->frameDataIN);
 
 	  //if (pMe->playing == FALSE)
 	  //{
-	 DBGPRINTF("HaveData %d %d %d %d", numFrames, length, rate, status);
+	 //DBGPRINTF("HaveData %d %d %d %d", numFrames, length, rate, status);
 	  //		  MEMCPY(pMe->frameDataOUT, pMe->frameDataIN, length);
 		  // If we succesfully read in data, then write to IVocoder
       
@@ -176,10 +176,16 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 		  {
 			  // Display the old one, and then set the new one
 			  suryabrew_DrawTempTemp(pMe);
+			  if (pMe->enable_datalogger) {
+				  suryabrew_DataLoggerLog(pMe);
+			  }
 			  pMe->cycleCount = 0;
 			  pMe->maxSound = 0;
 			  pMe->minSound = 8000;
 		  } 
+		  if (pMe->enable_datalogger) {
+				suryabrew_DataLoggerIncremenetSamples(pMe, length / 2); 
+		  }
 		  if (max > pMe->maxSound)
 		  {
 			  pMe->maxSound = max;
@@ -393,7 +399,7 @@ void suryabrew_TempUnloadVOC(suryabrew *pMe)
 
    
 	// Release IVocoder
-   if(pMe->pIVocoder) {
+   if (pMe->pIVocoder) {
 	   IVOCODER_VocOutReset(pMe->pIVocoder); 
 	   IVOCODER_VocInReset(pMe->pIVocoder); 
 	   IVOCODER_Release(pMe->pIVocoder);
@@ -401,7 +407,7 @@ void suryabrew_TempUnloadVOC(suryabrew *pMe)
    }
 
    // Release Sound interface
-   if(pMe->pISound) {
+   if (pMe->pISound) {
       ISOUND_Release(pMe->pISound);
       pMe->pISound = NULL;
    }

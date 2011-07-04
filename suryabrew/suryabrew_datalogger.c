@@ -28,12 +28,14 @@ void suryabrew_DataLoggerInit(suryabrew *pMe)
 	}
 
 	// get or create the counter value from the file
-	SPRINTF(tempstr, "%06u_datalog.csv", pMe->dataloggerCounter);
+	SPRINTF(tempstr, "%06u_dl.csv", pMe->dataloggerCounter);
 	suryabrew_FileCreateFileNamePrefix(pMe, tempstr);
 	SPRINTF(pMe->DatalogFilename, pMe->FileNamePrefix);
 	
+	DBGPRINTF("%s", pMe->DatalogFilename);
+
 	// open the file for writing/appending
-	pMe->pIFileDatalogger = suryabrew_FileAppendOrCreateFile(pMe, pMe->DatalogCounterFilename, NULL); 
+	pMe->pIFileDatalogger = suryabrew_FileAppendOrCreateFile(pMe, pMe->DatalogFilename, NULL); 
 	
 	if (pMe->pIFileDatalogger != NULL) {
 		pMe->dataloggerRunning = TRUE;
@@ -47,8 +49,10 @@ void suryabrew_DataLoggerUnload(suryabrew *pMe)
 	// flush output of counter and datalog file
 	
 	// close the ifile
+
 	if (pMe->pIFileDatalogger != NULL) {
 		IFILE_Release(pMe->pIFileDatalogger);
+		pMe->pIFileDatalogger = NULL;
 	}
 
 	pMe->dataloggerRunning = FALSE;
@@ -72,7 +76,7 @@ void suryabrew_DataLoggerLog(suryabrew *pMe)
 
 	GETJULIANDATE(GETUTCSECONDS(), &jt);
 
-	res = SPRINTF(outstr, "%u,%u,%u,%u%u%u%u%u%u,%d,%d,%d,%d,%d,%d\n", 
+	res = SPRINTF(outstr, "%u,%u,%u,%u%02u%02u%02u%02u%02u,%d,%d,%d,%d,%d,%d\n", 
 		pMe->dataloggerCounter,
 		GETUTCSECONDS(),
 		GETUPTIMEMS(),
@@ -85,8 +89,8 @@ void suryabrew_DataLoggerLog(suryabrew *pMe)
 		10000);
 
 	res2 = IFILE_Write(pMe->pIFileDatalogger, outstr, res);
-	DBGPRINTF("Wrote %d of %d bytes to log", res2, res);
-	DBGPRINTF("%s", outstr);
+	//DBGPRINTF("Wrote %d of %d bytes to log", res2, res);
+	//DBGPRINTF("%s", outstr);
 
 	if (pMe->dataloggerCounterSamples > pMe->dataloggerCounterIncrementInterval) {
 		suryabrew_DataLoggerIncrementCounter(pMe);
@@ -94,7 +98,7 @@ void suryabrew_DataLoggerLog(suryabrew *pMe)
 }
 
 
-static __inline void suryabrew_DataLoggerIncremenetSamples(suryabrew *pMe, int count) 
+__inline void suryabrew_DataLoggerIncremenetSamples(suryabrew *pMe, int count) 
 {
 	pMe->dataloggerCounterSamples = pMe->dataloggerCounterSamples + count;
 }
@@ -113,6 +117,7 @@ void suryabrew_DataLoggerIncrementCounter(suryabrew *pMe)
 
 	if (cfile != NULL) {
 		pMe->dataloggerCounter = pMe->dataloggerCounter + 1;
+		pMe->dataloggerCounterSamples = 0;
 		nErr = IFILE_Write(cfile, &pMe->dataloggerCounter, sizeof(uint32));
 		DBGPRINTF("Counter set to %d, wrote %d bytes", pMe->dataloggerCounter, nErr);
 	}

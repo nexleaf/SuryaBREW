@@ -81,6 +81,7 @@ typedef struct _suryabrew {
     boolean do_upload_delete_file;  // delete the image and DB row after upload
 	boolean do_gps;                 // run the gps subsystem
 	boolean allow_volume;          // allow someone to change the volume
+	boolean allow_playback;        // let the 5 key switch to echo mode
 	boolean enable_camera;         // whether the camera is enabled and accessible
 	boolean enable_datalogger;      // whether to enable the data logger mode
 
@@ -345,7 +346,7 @@ void suryabrew_UPIMGStatusNotification(void *pNotifyData, WebStatus ws, void *pD
 void suryabrew_DataLoggerInit(suryabrew *pMe);
 void suryabrew_DataLoggerUnload(suryabrew *pMe);
 void suryabrew_DataLoggerLog(suryabrew *pMe);
-static __inline void suryabrew_DataLoggerIncremenetSamples(suryabrew *pMe, int count);
+__inline void suryabrew_DataLoggerIncremenetSamples(suryabrew *pMe, int count);
 void suryabrew_DataLoggerIncrementCounter(suryabrew *pMe);
 void suryabrew_DataLoggerLog(suryabrew *pMe); // call at same time when displaying
 

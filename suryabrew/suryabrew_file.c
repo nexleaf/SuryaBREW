@@ -179,32 +179,31 @@ IFile* suryabrew_FileFileCreation(suryabrew *pMe, char *filename, boolean wipe, 
 
 	int nErr = 0;
 	IFile * ifile = NULL;
-	DBGPRINTF("2");
 	suryabrew_FileInitMgr(pMe);
-	DBGPRINTF("3");
 	if (pMe->pIFileMgr != NULL)
 	{
-		DBGPRINTF("4");
 		if (wipe) {
 			if (exists != NULL) {
 				*exists = FALSE;
 			}
 			ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_CREATE);
-			DBGPRINTF("5");
 			if (ifile == NULL) { // create fails if file exists
 				IFILEMGR_Remove(pMe->pIFileMgr, filename);
 				ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_CREATE);
-				*exists = TRUE;
+				if (exists != NULL) {
+					*exists = TRUE;
+				}
 			}
 		} else {
 			if (exists != NULL) {
 				*exists = TRUE;
 			}
 			ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_APPEND);
-			DBGPRINTF("7");
 			if (ifile == NULL) { // append fails if does not exist
 				ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_CREATE);
-				*exists = FALSE;
+				if (exists != NULL) {
+					*exists = FALSE;
+				}
 			}
 		}
 		if (ifile == NULL)
@@ -217,8 +216,7 @@ IFile* suryabrew_FileFileCreation(suryabrew *pMe, char *filename, boolean wipe, 
 			DBGPRINTF("Created file %s", filename);
 		}
 	} 
-
-	DBGPRINTF("8");	
+	
 	if (pMe->pIFileMgr != NULL)
 	{
 		IFILEMGR_Release(pMe->pIFileMgr);
@@ -237,7 +235,6 @@ IFile* suryabrew_FileCreateFile(suryabrew *pMe, char *filename, boolean *exists)
 
 IFile* suryabrew_FileAppendOrCreateFile(suryabrew *pMe, char *filename, boolean *exists)
 {
-	DBGPRINTF("1");
 	return suryabrew_FileFileCreation(pMe, filename, FALSE, exists);
 }
 

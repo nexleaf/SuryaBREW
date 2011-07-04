@@ -282,13 +282,17 @@ static boolean suryabrew_HandleEventTempMode(suryabrew* pMe, AEEEvent eCode, uin
 			suryabrew_TempLoadSound(pMe);			
 			return TRUE;
 		case AVK_5:
+			if (pMe->allow_playback == 0)
+			{
+				return TRUE;
+			}
 			if (pMe->soundMode != SOUNDMODE_PLAYBACK)
 			{
 				pMe->soundMode = SOUNDMODE_PLAYBACK;
 			} 
 			else
 			{
-				pMe->soundMode = SOUNDMODE_LOW;
+				pMe->soundMode = SOUNDMODE_MED;
 			}
 			suryabrew_TempLoadSound(pMe);
 			return TRUE;
@@ -551,6 +555,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->do_upload = 0;
 	pMe->do_upload_delete_file = 1;
 	pMe->allow_volume = 1;
+	pMe->allow_playback = 0;
 	pMe->enable_camera = 0;
 	pMe->enable_datalogger = 1;
 
@@ -643,7 +648,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	// DataLogger Init
 	pMe->dataloggerRunning = FALSE;
 	pMe->dataloggerCounter = 0; // will be set when datalogger is initialized
-	pMe->dataloggerCounterIncrementInterval = 960000; // 8000 * 60 * 2 = 2 minutes
+	pMe->dataloggerCounterIncrementInterval = 1440000; // 8000 * 60 * 3 = 3 minutes
 	pMe->dataloggerCounterSamples = 0;
 	pMe->pIFileDatalogger = NULL;
 
