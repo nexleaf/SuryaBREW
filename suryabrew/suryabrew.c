@@ -543,7 +543,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
     ISHELL_GetDeviceInfo(pMe->a.m_pIShell,&pMe->DeviceInfo);
 
     // Insert your code here for initializing or allocating resources...
-	pMe->pIShell   = pMe->a.m_pIShell;
+	pMe->pIShell = pMe->a.m_pIShell;
 
 	///////////////////////
 	// CONFIG INIT
@@ -552,6 +552,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->do_upload_delete_file = 1;
 	pMe->allow_volume = 1;
 	pMe->enable_camera = 0;
+	pMe->enable_datalogger = 1;
 
 	///////////////////////
 	// DISPLAY INIT
@@ -633,8 +634,19 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->cycleCount = 0;
 	ISHELL_LoadResString(pMe->pIShell, SURYABREW_RES_FILE, IDS_STRING_TEMPFMT,
 		pMe->tempDispFmt, sizeof(pMe->tempDispFmt));
+	ISHELL_LoadResString(pMe->pIShell, SURYABREW_RES_FILE, IDS_STRING_TEMPFMT_DATALOG,
+		pMe->tempDispFmtDataLog, sizeof(pMe->tempDispFmtDataLog));
 	ISHELL_LoadResString(pMe->pIShell, SURYABREW_RES_FILE, IDS_STRING_TEMPDBGFMT,
 		pMe->tempDispDBGFmt, sizeof(pMe->tempDispDBGFmt));
+
+	///////////////////////
+	// DataLogger Init
+	pMe->dataloggerRunning = FALSE;
+	pMe->dataloggerCounter = 0; // will be set when datalogger is initialized
+	pMe->dataloggerCounterIncrementInterval = 960000; // 8000 * 60 * 2 = 2 minutes
+	pMe->dataloggerCounterSamples = 0;
+	pMe->pIFileDatalogger = NULL;
+
 
 	///////////////////////
 	// IWeb Init
@@ -759,8 +771,12 @@ static void suryabrew_DrawScreen(suryabrew * pMe)
 void suryabrew_DrawTempTemp(suryabrew *pMe)
 {
 	//int res = (pMe->maxSound + 858) / 19;
-	int res = (pMe->maxSound * 258 + 360000)/10000;
-	WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmt, res);
+	int res = suryabrew_TempCalcTemp(pMe); //(pMe->maxSound * 258 + 360000)/10000;
+	if (pMe->dataloggerRunning) {
+		WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmtDataLog, pMe->dataloggerCounter, res);	
+	} else {
+		WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmt, res);
+	}
 	WSPRINTF(pMe->tempDispDBG, 64, pMe->tempDispDBGFmt, pMe->maxSound, pMe->minSound, (pMe->maxSound + pMe->minSound)/2);
 
 	IDISPLAY_ClearScreen(pMe->pIDisplay);

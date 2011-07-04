@@ -12,6 +12,14 @@ static void NeedDataCB(uint16 numFrames, void * usrPtr);
 static void PlayedDataCB(uint16 numFrames, void * usrPtr);
 static void ReadyCB(void * usrPtr);
 
+// wanted to inline, but __inline giving trouble
+int suryabrew_TempCalcTemp(suryabrew* pMe)
+{
+	// One place to calc temp from PCM values... can also use user input calibration here eventually
+	return (pMe->maxSound * 258 + 360000)/10000;
+	//WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmt, res);
+	//WSPRINTF(pMe->tempDispDBG, 64, pMe->tempDispDBGFmt, pMe->maxSound, pMe->minSound, (pMe->maxSound + pMe->minSound)/2);
+}
 
 void suryabrew_TempSetActive(suryabrew* pMe, boolean active)
 {
@@ -410,6 +418,10 @@ void suryabrew_TempUnloadVOC(suryabrew *pMe)
 	   pMe->pIFileAudioOut = NULL;
    }
 
+   if (pMe->enable_datalogger) {
+	   suryabrew_DataLoggerUnload(pMe);
+   }
+
 }
 
 int suryabrew_TempInitVOC(suryabrew *pMe)
@@ -417,10 +429,10 @@ int suryabrew_TempInitVOC(suryabrew *pMe)
 	pMe->tempActive = FALSE;
 	pMe->tempVocOn = FALSE;
 	//	pMe->playing = FALSE;
-
+	
 	pMe->tempSoundOut = ISHELL_LoadResData(pMe->pIShell, SURYABREW_RES_FILE, IDB_BINARY_8KHZ_400HZ_16BIT_05, RESTYPE_BINARY);
 
-  // Create IVocoder Interface
+	// Create IVocoder Interface
    if (ISHELL_CreateInstance(pMe->a.m_pIShell, AEECLSID_VOCODER, (void **)&pMe->pIVocoder) != SUCCESS)
    {
       DBGPRINTF("Error Creating IVocoder interface");
@@ -437,12 +449,18 @@ int suryabrew_TempInitVOC(suryabrew *pMe)
    ISound_RegisterNotify(pMe->pISound, suryabrew_ISoundCallback, pMe);
    suryabrew_TempGetVolume(pMe);
 
-	// Assumes CurrDate set!
-	suryabrew_FileCreateFileNamePrefix(pMe, "AUDIO");
-	SPRINTF(pMe->AudioFilename, "%sTEST.raw", pMe->FileNamePrefix);
+   // Assumes CurrDate set! Debug output... save file to SD card
+   /*
+   suryabrew_FileCreateFileNamePrefix(pMe, "AUDIO");
+   SPRINTF(pMe->AudioFilename, "%sTEST.raw", pMe->FileNamePrefix);
 
-	DBGPRINTF("to: %s", pMe->ImageFilename);
-	pMe->pIFileAudioOut = suryabrew_FileCreateFile(pMe, pMe->AudioFilename);
+   DBGPRINTF("to: %s", pMe->ImageFilename);
+   pMe->pIFileAudioOut = suryabrew_FileCreateFile(pMe, pMe->AudioFilename, NULL);
+   */
+
+   if (pMe->enable_datalogger) {
+	   suryabrew_DataLoggerInit(pMe);
+   }
 
    return SUCCESS;
 }

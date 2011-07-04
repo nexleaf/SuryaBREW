@@ -82,6 +82,7 @@ typedef struct _suryabrew {
 	boolean do_gps;                 // run the gps subsystem
 	boolean allow_volume;          // allow someone to change the volume
 	boolean enable_camera;         // whether the camera is enabled and accessible
+	boolean enable_datalogger;      // whether to enable the data logger mode
 
 	SuryaModeType SuryaMode; // Home screen, taking pictures, or taking temp
 
@@ -136,9 +137,19 @@ typedef struct _suryabrew {
 	//byte frameDataOUT[512];  // Buffer for reading and writing frames
 	byte *tempSoundOut;
 	SuryaSoundMode soundMode;
+
+	// try debugging by writing file to SD card 
 	char AudioFilename[128];
 	IFile *pIFileAudioOut;
 
+	// Data logging features
+	boolean dataloggerRunning;
+	char DatalogCounterFilename[128];
+	uint32 dataloggerCounter;
+	uint32 dataloggerCounterIncrementInterval; // in samples?
+	uint32 dataloggerCounterSamples;
+    char DatalogFilename[128];
+	IFile *pIFileDatalogger;
 
 	// stats and display for temp
 	int16 maxSound;
@@ -148,6 +159,7 @@ typedef struct _suryabrew {
     AECHAR tempDisp[64];
 	AECHAR tempDispDBG[64];
 	AECHAR tempDispFmt[16];
+	AECHAR tempDispFmtDataLog[16];
 	AECHAR tempDispDBGFmt[16];
 	uint16 currVolume;
 
@@ -301,16 +313,19 @@ void suryabrew_TempVolUp(suryabrew *pMe);
 void suryabrew_TempVolDown(suryabrew *pMe);
 void suryabrew_TempPlayTone(suryabrew *pMe);
 void suryabrew_TempStopTone(suryabrew *pMe);
+int suryabrew_TempCalcTemp(suryabrew* pMe);
 
 /*******************************
 * File & Dir Code
 ********************************/
 
 void suryabrew_FileDeleteFile(suryabrew *pMe, char *filename);
+boolean suryabrew_FileExists(suryabrew *pMe, char *filename, int *size); // last arg can be null
 void suryabrew_FileCreateDirPrefixDate(suryabrew *pMe);
 void suryabrew_FileCreateDirPrefix(suryabrew *pMe, char *filename);
-IFile* suryabrew_FileCreateFile(suryabrew *pMe, char *filename);
-
+IFile* suryabrew_FileCreateFile(suryabrew *pMe, char *filename, boolean *exists); // last arg can be null
+IFile* suryabrew_FileAppendOrCreateFile(suryabrew *pMe, char *filename, boolean *exists); // last arg can be null
+IFile* suryabrew_FileGetForRead(suryabrew *pMe, char *filename);
 
 /*******************************
 * upload Code
@@ -322,6 +337,17 @@ void suryabrew_UPIMGUnload(suryabrew *pMe);
 void suryabrew_UPIMGTimer(void *pData);
 void suryabrew_UPIMGPostDone(void *pData);
 void suryabrew_UPIMGStatusNotification(void *pNotifyData, WebStatus ws, void *pData);
+
+
+/*******************************
+* datalogger code
+********************************/
+void suryabrew_DataLoggerInit(suryabrew *pMe);
+void suryabrew_DataLoggerUnload(suryabrew *pMe);
+void suryabrew_DataLoggerLog(suryabrew *pMe);
+static __inline void suryabrew_DataLoggerIncremenetSamples(suryabrew *pMe, int count);
+void suryabrew_DataLoggerIncrementCounter(suryabrew *pMe);
+void suryabrew_DataLoggerLog(suryabrew *pMe); // call at same time when displaying
 
 
 #endif // SURYABREW_H_H

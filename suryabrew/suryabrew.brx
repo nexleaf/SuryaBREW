@@ -29,7 +29,10 @@
 		<Text>%d %d %d</Text>
 	</String>
 	<String Id="1010" Name="IDS_STRING_TEMPFMT">
-		<Text>%d def F.</Text>
+		<Text>%d deg C.</Text>
+	</String>
+	<String Id="1011" Name="IDS_STRING_TEMPFMT_DATALOG">
+		<Text>%u: %d deg C.</Text>
 	</String>
 </Strings>
 <Objects MimeType="image/bmp">

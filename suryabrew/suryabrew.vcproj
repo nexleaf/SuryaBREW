@@ -188,6 +188,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\suryabrew_datalogger.c"
+				>
+			</File>
+			<File
 				RelativePath=".\suryabrew_db.c"
 				>
 			</File>

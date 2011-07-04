@@ -45,6 +45,41 @@ void suryabrew_FileDeleteFile(suryabrew *pMe, char *filename)
 	}
 }
 
+boolean suryabrew_FileExists(suryabrew *pMe, char *filename, int *size)
+{
+	int nErr = 0;
+	FileInfo fi;
+	boolean retval = FALSE;
+	suryabrew_FileInitMgr(pMe);
+
+
+	if (pMe->pIFileMgr != NULL)
+	{
+		nErr = IFILEMGR_GetInfo(pMe->pIFileMgr, filename, &fi);
+
+		if (nErr == EFAILED) {
+			if (size != NULL) {
+				*size = 0;
+			}
+			retval = FALSE;
+		} else {
+			if (size != NULL) {
+				*size = fi.dwSize;
+			}
+			retval = TRUE;
+		}
+
+	}
+
+	if (pMe->pIFileMgr != NULL)
+	{
+		IFILEMGR_Release(pMe->pIFileMgr);
+		pMe->pIFileMgr = NULL;
+	}
+
+	return retval;
+}
+
 
 void suryabrew_FileCreateDirPrefixDate(suryabrew *pMe)
 {
@@ -139,17 +174,39 @@ void suryabrew_FileCreateFileNamePrefix(suryabrew *pMe, char* filename)
 }
 
 
-IFile* suryabrew_FileCreateFile(suryabrew *pMe, char *filename)
+IFile* suryabrew_FileFileCreation(suryabrew *pMe, char *filename, boolean wipe, boolean *exists)
 {
+
 	int nErr = 0;
 	IFile * ifile = NULL;
-
+	DBGPRINTF("2");
 	suryabrew_FileInitMgr(pMe);
-
+	DBGPRINTF("3");
 	if (pMe->pIFileMgr != NULL)
 	{
-		IFILEMGR_Remove(pMe->pIFileMgr, filename);
-		ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_CREATE);
+		DBGPRINTF("4");
+		if (wipe) {
+			if (exists != NULL) {
+				*exists = FALSE;
+			}
+			ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_CREATE);
+			DBGPRINTF("5");
+			if (ifile == NULL) { // create fails if file exists
+				IFILEMGR_Remove(pMe->pIFileMgr, filename);
+				ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_CREATE);
+				*exists = TRUE;
+			}
+		} else {
+			if (exists != NULL) {
+				*exists = TRUE;
+			}
+			ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_APPEND);
+			DBGPRINTF("7");
+			if (ifile == NULL) { // append fails if does not exist
+				ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_CREATE);
+				*exists = FALSE;
+			}
+		}
 		if (ifile == NULL)
 		{
 			nErr = IFILEMGR_GetLastError(pMe->pIFileMgr);
@@ -161,6 +218,53 @@ IFile* suryabrew_FileCreateFile(suryabrew *pMe, char *filename)
 		}
 	} 
 
+	DBGPRINTF("8");	
+	if (pMe->pIFileMgr != NULL)
+	{
+		IFILEMGR_Release(pMe->pIFileMgr);
+		pMe->pIFileMgr = NULL;
+	}
+
+	return ifile;
+
+
+}
+
+IFile* suryabrew_FileCreateFile(suryabrew *pMe, char *filename, boolean *exists)
+{
+	return suryabrew_FileFileCreation(pMe, filename, TRUE, exists);
+}
+
+IFile* suryabrew_FileAppendOrCreateFile(suryabrew *pMe, char *filename, boolean *exists)
+{
+	DBGPRINTF("1");
+	return suryabrew_FileFileCreation(pMe, filename, FALSE, exists);
+}
+
+IFile* suryabrew_FileGetForRead(suryabrew *pMe, char *filename)
+{
+
+	int nErr = 0;
+	IFile * ifile = NULL;
+
+	suryabrew_FileInitMgr(pMe);
+
+	if (pMe->pIFileMgr != NULL)
+	{
+		
+		ifile = IFILEMGR_OpenFile(pMe->pIFileMgr, filename, _OFM_READ);
+		
+		if (ifile == NULL)
+		{
+			nErr = IFILEMGR_GetLastError(pMe->pIFileMgr);
+			DBGPRINTF("Error creating file %d", nErr);
+			DBGPRINTF("%s", filename);
+		} else 
+		{
+			DBGPRINTF("Opened for reading file %s", filename);
+		}
+	} 
+
 	
 	if (pMe->pIFileMgr != NULL)
 	{
@@ -169,4 +273,5 @@ IFile* suryabrew_FileCreateFile(suryabrew *pMe, char *filename)
 	}
 
 	return ifile;
+
 }

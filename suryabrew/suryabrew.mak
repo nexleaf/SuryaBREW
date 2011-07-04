@@ -40,7 +40,7 @@ BREW_ADDINS    = $(BREWADDINS)
 GCC_HOME       = $(GCCHOME)
 GCC_LIBPATH    = $(GCCLIBPATH)
 TARGET         = suryabrew
-OBJS           = AEEMOD~1.o AEEAPP~1.o SURYAB~1.o SURYAB~2.o SURYAB~3.o SURYAB~4.o SUEDFD~1.o SUF9DF~1.o SU7501~1.o GCCResolver.o 
+OBJS           = AEEMOD~1.o AEEAPP~1.o SURYAB~1.o SURYAB~2.o SURYAB~3.o SURYAB~4.o SUEDFD~1.o SUF9DF~1.o SU7501~1.o SU7138~1.o GCCResolver.o 
 APP_INCLUDES   = -I "$(BREWDIR)\inc"-I $(BREWDIR)\inc 
 
 #-------------------------------------------------------------------------------
