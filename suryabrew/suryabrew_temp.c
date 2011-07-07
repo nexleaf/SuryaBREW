@@ -16,7 +16,9 @@ static void ReadyCB(void * usrPtr);
 int suryabrew_TempCalcTemp(suryabrew* pMe)
 {
 	// One place to calc temp from PCM values... can also use user input calibration here eventually
-	return (pMe->maxSound * 258 + 360000)/10000;
+	return (pMe->maxSound * 568 + 400396)/10000;
+	//return (pMe->maxSound * 465 + 405156)/10000;
+	//return (pMe->maxSound * 258 + 360000)/10000;
 	//WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmt, res);
 	//WSPRINTF(pMe->tempDispDBG, 64, pMe->tempDispDBGFmt, pMe->maxSound, pMe->minSound, (pMe->maxSound + pMe->minSound)/2);
 }
@@ -436,7 +438,7 @@ int suryabrew_TempInitVOC(suryabrew *pMe)
 	pMe->tempVocOn = FALSE;
 	//	pMe->playing = FALSE;
 	
-	pMe->tempSoundOut = ISHELL_LoadResData(pMe->pIShell, SURYABREW_RES_FILE, IDB_BINARY_8KHZ_400HZ_16BIT_05, RESTYPE_BINARY);
+	pMe->tempSoundOut = ISHELL_LoadResData(pMe->pIShell, SURYABREW_RES_FILE, IDB_BINARY_8KHZ_400HZ_16BIT_01, RESTYPE_BINARY);
 
 	// Create IVocoder Interface
    if (ISHELL_CreateInstance(pMe->a.m_pIShell, AEECLSID_VOCODER, (void **)&pMe->pIVocoder) != SUCCESS)

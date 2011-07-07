@@ -223,7 +223,7 @@ static boolean suryabrew_HandleEventTempMode(suryabrew* pMe, AEEEvent eCode, uin
 				//suryabrew_TempStopVOC(pMe);
 			} else {
 				if (pMe->allow_volume == 0) {
-					pMe->soundMode = SOUNDMODE_LOW;
+					pMe->soundMode = SOUNDMODE_ONE;
 					suryabrew_TempLoadSound(pMe);
 				}
 				suryabrew_TempSetActive(pMe, TRUE);
@@ -292,7 +292,7 @@ static boolean suryabrew_HandleEventTempMode(suryabrew* pMe, AEEEvent eCode, uin
 			} 
 			else
 			{
-				pMe->soundMode = SOUNDMODE_MED;
+				pMe->soundMode = SOUNDMODE_ONE;
 			}
 			suryabrew_TempLoadSound(pMe);
 			return TRUE;
@@ -554,7 +554,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->do_gps = 0;
 	pMe->do_upload = 0;
 	pMe->do_upload_delete_file = 1;
-	pMe->allow_volume = 1;
+	pMe->allow_volume = 0;
 	pMe->allow_playback = 0;
 	pMe->enable_camera = 0;
 	pMe->enable_datalogger = 1;
@@ -631,7 +631,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->tempActive = FALSE;
 	//	pMe->playing = FALSE;
 	//pMe->soundMode = SOUNDMODE_PLAYBACK;
-	pMe->soundMode = SOUNDMODE_LOW;
+	pMe->soundMode = SOUNDMODE_ONE;
 	pMe->pIFileAudioOut = NULL;
 
 	pMe->maxSound = 0;
