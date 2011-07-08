@@ -84,8 +84,8 @@ void suryabrew_DataLoggerLog(suryabrew *pMe)
 		temp,
 		pMe->maxSound,
 		pMe->minSound,
-		568,
-		400396,
+		449,
+		168995,
 		10000);
 
 	res2 = IFILE_Write(pMe->pIFileDatalogger, outstr, res);

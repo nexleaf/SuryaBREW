@@ -16,7 +16,8 @@ static void ReadyCB(void * usrPtr);
 int suryabrew_TempCalcTemp(suryabrew* pMe)
 {
 	// One place to calc temp from PCM values... can also use user input calibration here eventually
-	return (pMe->maxSound * 568 + 400396)/10000;
+	return (pMe->maxSound * 449 + 168995)/10000;
+	//return (pMe->maxSound * 568 + 400396)/10000;
 	//return (pMe->maxSound * 465 + 405156)/10000;
 	//return (pMe->maxSound * 258 + 360000)/10000;
 	//WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmt, res);
