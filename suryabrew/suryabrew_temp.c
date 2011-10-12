@@ -2,7 +2,6 @@
 
 #include "suryabrew.h"
 
-
 /***********************************************
 * TEMPERATURE INTERFACE AND OPERATION
 ************************************************/
@@ -16,7 +15,7 @@ static void ReadyCB(void * usrPtr);
 void suryabrew_TempSetActive(suryabrew* pMe, boolean active)
 {
    int status;
-
+	
    // Check to see if activity is already set
    if (active == pMe->tempActive)
    {
@@ -30,7 +29,8 @@ void suryabrew_TempSetActive(suryabrew* pMe, boolean active)
       if (pMe->pIVocoder && pMe->pISound) {
 
          // Unmute the microphone and earpiece
-         pMe->soundInfo.eDevice     = AEE_SOUND_DEVICE_CURRENT; //AEE_SOUND_DEVICE_SPEAKER; //AEE_SOUND_DEVICE_CURRENT;
+		  
+         pMe->soundInfo.eDevice     =AEE_SOUND_DEVICE_HEADSET;//AEE_SOUND_DEVICE_STEREO_HEADSET; //AEE_SOUND_DEVICE_CURRENT; //AEE_SOUND_DEVICE_SPEAKER; //AEE_SOUND_DEVICE_CURRENT;
          pMe->soundInfo.eMethod     = AEE_SOUND_METHOD_VOICE;
          pMe->soundInfo.eAPath      = AEE_SOUND_APATH_MUTE; // AEE_SOUND_APATH_BOTH;
          pMe->soundInfo.eEarMuteCtl = AEE_SOUND_MUTECTL_UNMUTED;
@@ -112,6 +112,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
    suryabrew *pMe = (suryabrew*)usrPtr;
    DataRateType rate;
    uint16 length;
+   uint32 nErr=0;
    int i;
    int status;
    int j;
@@ -120,28 +121,47 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
    //uint16 *u16;
    int16 max = 0;
    int16 min = 8000;
+   // rohit [9/15/2011]
+	if(pMe->Flag==FALSE)
+	  suryabrew_gettime(pMe);
+	if(pMe->Add_Record_Flag==TRUE)
+	{
+		pMe->Add_Record_Flag=FALSE;
+		suryabrew_setdata(pMe);
+		suryabrew_DBAddRecord(pMe);
+		suryabrew_resetdata(pMe);
+	}
+	if(pMe->check_recod_fail_4times>=NO_UPLOAD_FAIL)
+	{
 
+			CALLBACK_Cancel(&pMe->Get_Current_TimerCB);
+				ISHELL_CancelTimer(pMe->pIShell,(PFNNOTIFY) suryabrew_getcurrtime,pMe);
+		DBGPRINTF("Stopping temp sensing in havedtaCB");
+				suryabrew_TempSetActive(pMe,FALSE);
+				suryabrew_DrawTempScreen(pMe);
+	}
 
+	// rohit [9/15/2011]
    // Data integrity checks
    if (!pMe || !pMe->pIVocoder)
    {
       return;
    }
    // Read in each frame and send to network
-   DBGPRINTF("Entering HAVEDATA !!!");
+ //  DBGPRINTF("Entering HAVEDATA !!!");
    for (i = 0; i < numFrames; i++) {
       status = IVOCODER_VocInRead(pMe->pIVocoder,
                                   &rate, &length, pMe->frameDataIN);
 
 	  //if (pMe->playing == FALSE)
 	  //{
-	 DBGPRINTF("HaveData %d %d %d %d", numFrames, length, rate, status);
+//	 DBGPRINTF("HaveData %d %d %d %d", numFrames, length, rate, status);
 	  //		  MEMCPY(pMe->frameDataOUT, pMe->frameDataIN, length);
 		  // If we succesfully read in data, then write to IVocoder
-      
-	  if (status == SUCCESS) {
+      //DBGPRINTF("framedatain==>",(int16*)pMe->frameDataIN);
+	  if (status == SUCCESS  ) {
 		  //for (j = 0; j < length; j++) {
-		  //	  DBGPRINTF("%x", pMe->frameDataIN[j]);
+		  //	  DBGPRINTF("FRAMDATAIN==>%x", pMe->frameDataIN[j]);
 		  //}
 		  // Send recived data to IVocoder
 		  //IVOCODER_VocOutWrite(pMe->pIVocoder, rate, length, pMe->frameDataOUT);
@@ -162,12 +182,17 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 				  min = tempint;
 			  }
 			 // DBGPRINTF("%d %u", i16[j], u16[j]);
+			//  DBGPRINTF("il6[j] %d \n", i16[j]);
 		  }
-		  //DBGPRINTF("Max: %d %d", max, pMe->maxSound);
-		  if (pMe->cycleCount >= pMe->cycleMax)
+		/*  DBGPRINTF("Max: %d %d", max, pMe->maxSound);
+		  DBGPRINTF("cyclecout ccyclemax %d %d",pMe->cycleCount,pMe->cycleMax);*/
+		 // suryabrew_getcurrtime(pMe);
+		  if (pMe->cycleCount >= pMe->cycleMax )
 		  {
 			  // Display the old one, and then set the new one
+			  if(pMe->Get_Time_Flag==TRUE)
 			  suryabrew_DrawTempTemp(pMe);
+			  
 			  pMe->cycleCount = 0;
 			  pMe->maxSound = 0;
 			  pMe->minSound = 8000;
@@ -182,12 +207,25 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 		  }
 		  pMe->cycleCount += 1;
 
-
+	//	DBGPRINTF("soundmode==>%d",pMe->soundMode);
 		  if (pMe->soundMode == SOUNDMODE_PLAYBACK)
 		  {
-			  IVOCODER_VocOutWrite(pMe->pIVocoder, rate, length, pMe->frameDataIN);
+			  nErr= IVOCODER_VocOutWrite(pMe->pIVocoder, rate, length, pMe->frameDataIN);
+
+			  DBGPRINTF("SOUNDMODE_PLAYBACK====>%d",nErr);
+			/*  while (i < sizeof(pMe->frameDataIN))
+				{
+					 DBGPRINTF("framdatain buffer%02X",(int)pMe->frameDataIN[i]);
+					 i++;
+				}*/
 		  } else {
-			  IVOCODER_VocOutWrite(pMe->pIVocoder, FULL_RATE, 320, pMe->tempSoundOut);
+			  nErr=IVOCODER_VocOutWrite(pMe->pIVocoder, FULL_RATE, 320, pMe->tempSoundOut);
+			  DBGPRINTF("not playSOUNDMODE_PLAYBACK====>%d,%d",nErr,pMe->soundMode);
+			 /* while (i < sizeof(pMe->tempSoundOut))
+				{
+					 DBGPRINTF("tempsoundout buffer%02X",(int)pMe->tempSoundOut);
+					 i++;
+				}*/
 		  }
 
 
@@ -197,7 +235,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 	  //pMe->playing = TRUE;
 	  //}
    }
-
+   
 }
 
 static void PlayedDataCB(uint16 numFrames, void * usrPtr) {
@@ -216,8 +254,10 @@ static void PlayedDataCB(uint16 numFrames, void * usrPtr) {
 }
 
 static void NeedDataCB(uint16 numFrames, void * usrPtr) {
+
    suryabrew *pMe = (suryabrew *)usrPtr;
    DBGPRINTF("NeedData %d", numFrames);
+
 
    //
    // NOTE!!! This NEVER seems to get called no matter what I do!
@@ -280,7 +320,7 @@ void suryabrew_TempLoadSound(suryabrew *pMe)
    default:
 	   break;
    }
-
+  DBGPRINTF("in load temp sound");
 
 }
 
@@ -315,7 +355,7 @@ void suryabrew_ISoundCallback(void *pUser, AEESoundCmd eCBType, AEESoundStatus e
 }
 
 
-void suryabrew_TempGetVolume(suryabrew *pMe)
+void suryabrew_TempGetVolume(suryabrew *pMe)   
 {
 	if (pMe->pISound == NULL)
 	{
@@ -385,6 +425,7 @@ void suryabrew_TempUnloadVOC(suryabrew *pMe)
 
    
 	// Release IVocoder
+	DBGPRINTF("in suryabrew tempunloadvoc");
    if(pMe->pIVocoder) {
 	   IVOCODER_VocOutReset(pMe->pIVocoder); 
 	   IVOCODER_VocInReset(pMe->pIVocoder); 
@@ -393,23 +434,27 @@ void suryabrew_TempUnloadVOC(suryabrew *pMe)
    }
 
    // Release Sound interface
+   DBGPRINTF("free sound in voc");
    if(pMe->pISound) {
       ISOUND_Release(pMe->pISound);
       pMe->pISound = NULL;
    }
 
+   DBGPRINTF("free o/p sound");
    if (pMe->tempSoundOut != NULL)
    {
 	   ISHELL_FreeResData(pMe->pIShell, pMe->tempSoundOut);
 	   pMe->tempSoundOut = NULL;
    }
 
+   DBGPRINTF("free pifileaudioout");
    if (pMe->pIFileAudioOut != NULL)
    {
 	   IFILE_Release(pMe->pIFileAudioOut);
 	   pMe->pIFileAudioOut = NULL;
    }
 
+   DBGPRINTF("all tempunload voc are free");
 }
 
 int suryabrew_TempInitVOC(suryabrew *pMe)

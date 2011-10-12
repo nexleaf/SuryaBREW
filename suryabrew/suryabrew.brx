@@ -31,6 +31,15 @@
 	<String Id="1010" Name="IDS_STRING_TEMPFMT">
 		<Text>%d def F.</Text>
 	</String>
+	<String Id="1011" Name="IDS_STRING_1011">
+		<Text>Please Insert</Text>
+	</String>
+	<String Id="1012" Name="IDS_STRING_1012">
+		<Text>Exit</Text>
+	</String>
+	<String Id="1013" Name="IDS_STRING_1013">
+		<Text>Tempt. Sencing Device</Text>
+	</String>
 </Strings>
 <Objects MimeType="image/bmp">
 	<Object Id="5001" Name="IDI_OBJECT_CHECKYES">

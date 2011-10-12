@@ -84,38 +84,43 @@ void suryabrew_FileCreateFileNamePrefix(suryabrew *pMe, char* filename)
 {
 	int nErr = 0;
 	// Init manager
-	suryabrew_FileInitMgr(pMe);
+//	suryabrew_FileInitMgr(pMe);
 
 	// If manager actually do something
-	if (pMe->pIFileMgr != NULL)
+//	if (pMe->pIFileMgr != NULL)
+//	{
+//	/*	SPRINTF(pMe->FileNamePrefix, "%s%s",
+//			AEEFS_CARD0_DIR, SURYABREW_DIR_PREFIX);
+//*/
+//			SPRINTF(pMe->FileNamePrefix, "%s",
+//			 SURYABREW_DIR_PREFIX);
+//		// If we can not create the dir, force local phone storage
+//		if ((nErr = IFILEMGR_MkDir(pMe->pIFileMgr, pMe->FileNamePrefix)) != SUCCESS)
+//		{
+//			DBGPRINTF("FileCreateFileNamePrefix Unable to Create dir %s %d",
+//				pMe->FileNamePrefix, nErr);
+//			if (filename != NULL)
+//			{
+//				SPRINTF(pMe->FileNamePrefix, "%s",
+//					filename);
+//			} 
+//			else
+//			{
+//				MEMSET(pMe->FileNamePrefix, 0, 16);
+//			}
+//		} else {
+//			// since everything went well, if they want a file name, append it
+//			if (filename != NULL)
+//			{
+//				/*SPRINTF(pMe->FileNamePrefix, "%s%s%s",
+//					AEEFS_CARD0_DIR, SURYABREW_DIR_PREFIX, filename);
+//					*/
+//				SPRINTF(pMe->FileNamePrefix, "%s%s",
+//					 SURYABREW_DIR_PREFIX, filename);
+//			}
+//		}
+//	} else */
 	{
-		SPRINTF(pMe->FileNamePrefix, "%s%s",
-			AEEFS_CARD0_DIR, SURYABREW_DIR_PREFIX);
-
-		// If we can not create the dir, force local phone storage
-		if ((nErr = IFILEMGR_MkDir(pMe->pIFileMgr, pMe->FileNamePrefix)) != SUCCESS)
-		{
-			DBGPRINTF("FileCreateFileNamePrefix Unable to Create dir %s %d",
-				pMe->FileNamePrefix, nErr);
-			if (filename != NULL)
-			{
-				SPRINTF(pMe->FileNamePrefix, "%s",
-					filename);
-			} 
-			else
-			{
-				MEMSET(pMe->FileNamePrefix, 0, 16);
-			}
-		} else {
-
-			// since everything went well, if they want a file name, append it
-			if (filename != NULL)
-			{
-				SPRINTF(pMe->FileNamePrefix, "%s%s%s",
-					AEEFS_CARD0_DIR, SURYABREW_DIR_PREFIX, filename);
-			}
-		}
-	} else {
 		// If no manager, then zero out the prefix, unless there is a file name
 		// this will force local phone storage
 		if (filename != NULL)
@@ -130,11 +135,11 @@ void suryabrew_FileCreateFileNamePrefix(suryabrew *pMe, char* filename)
 	}
 
 
-	if (pMe->pIFileMgr != NULL)
+/*	if (pMe->pIFileMgr != NULL)
 	{
 		IFILEMGR_Release(pMe->pIFileMgr);
 		pMe->pIFileMgr = NULL;
-	}
+	}*/
 
 }
 
