@@ -212,7 +212,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 		  {
 			  nErr= IVOCODER_VocOutWrite(pMe->pIVocoder, rate, length, pMe->frameDataIN);
 
-			  DBGPRINTF("SOUNDMODE_PLAYBACK====>%d",nErr);
+			  //DBGPRINTF("SOUNDMODE_PLAYBACK====>%d",nErr);
 			/*  while (i < sizeof(pMe->frameDataIN))
 				{
 					 DBGPRINTF("framdatain buffer%02X",(int)pMe->frameDataIN[i]);
@@ -220,7 +220,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 				}*/
 		  } else {
 			  nErr=IVOCODER_VocOutWrite(pMe->pIVocoder, FULL_RATE, 320, pMe->tempSoundOut);
-			  DBGPRINTF("not playSOUNDMODE_PLAYBACK====>%d,%d",nErr,pMe->soundMode);
+			  //DBGPRINTF("not playSOUNDMODE_PLAYBACK====>%d,%d",nErr,pMe->soundMode);
 			 /* while (i < sizeof(pMe->tempSoundOut))
 				{
 					 DBGPRINTF("tempsoundout buffer%02X",(int)pMe->tempSoundOut);

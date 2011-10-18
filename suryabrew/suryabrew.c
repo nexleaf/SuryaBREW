@@ -59,9 +59,10 @@ SIDE EFFECTS
 int AEEClsCreateInstance(AEECLSID ClsId, IShell *pIShell, IModule *po, void **ppObj)
 {
 	*ppObj = NULL;
-	DBGPRINTF("in aeeclscreateinstance");
+	DBGPRINTF("%x %d -in aeeclscreateinstance", ClsId, ClsId);
 	if( ClsId == AEECLSID_SURYABREW )
 	{
+		DBGPRINTF("new app");
 		// Create the applet and make room for the applet structure
 		if( AEEApplet_New(sizeof(suryabrew),
                           ClsId,
@@ -90,7 +91,9 @@ int AEEClsCreateInstance(AEECLSID ClsId, IShell *pIShell, IModule *po, void **pp
 
         } // end AEEApplet_New
 
-    }
+	} else {
+		DBGPRINTF("ID mismatch %x", ClsId);
+	}
 
 	return(EFAILED);
 }

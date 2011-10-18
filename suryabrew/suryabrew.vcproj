@@ -176,6 +176,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\communication.c"
+				>
+			</File>
+			<File
+				RelativePath=".\communication.h"
+				>
+			</File>
+			<File
 				RelativePath=".\suryabrew.c"
 				>
 			</File>
@@ -184,19 +192,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\suryabrew_camera.c"
-				>
-			</File>
-			<File
 				RelativePath=".\suryabrew_db.c"
 				>
 			</File>
 			<File
 				RelativePath=".\suryabrew_file.c"
-				>
-			</File>
-			<File
-				RelativePath=".\suryabrew_gps.c"
 				>
 			</File>
 			<File
