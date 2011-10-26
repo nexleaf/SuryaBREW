@@ -192,6 +192,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\suryabrew_calibration.c"
+				>
+			</File>
+			<File
 				RelativePath=".\suryabrew_db.c"
 				>
 			</File>

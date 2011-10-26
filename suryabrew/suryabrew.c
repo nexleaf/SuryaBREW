@@ -59,10 +59,9 @@ SIDE EFFECTS
 int AEEClsCreateInstance(AEECLSID ClsId, IShell *pIShell, IModule *po, void **ppObj)
 {
 	*ppObj = NULL;
-	DBGPRINTF("%x %d -in aeeclscreateinstance", ClsId, ClsId);
+	DBGPRINTF("in aeeclscreateinstance");
 	if( ClsId == AEECLSID_SURYABREW )
 	{
-		DBGPRINTF("new app");
 		// Create the applet and make room for the applet structure
 		if( AEEApplet_New(sizeof(suryabrew),
                           ClsId,
@@ -91,9 +90,7 @@ int AEEClsCreateInstance(AEECLSID ClsId, IShell *pIShell, IModule *po, void **pp
 
         } // end AEEApplet_New
 
-	} else {
-		DBGPRINTF("ID mismatch %x", ClsId);
-	}
+    }
 
 	return(EFAILED);
 }
@@ -200,6 +197,9 @@ static boolean suryabrew_HandleEventTempMode(suryabrew* pMe, AEEEvent eCode, uin
 		case AVK_UP:
 			suryabrew_PrintMem(pMe);
 			break;
+		case AVK_STAR:
+	//		suryabrew_TempCalcTemp(pMe);
+			break;
 		case AVK_DOWN:
 //			DBGPRINTF("State %d-%d-%d-%d", pMe->SuryaMode, pMe->CameraMode, pMe->tempActive, pMe->tempVocOn);
 			break;
@@ -237,7 +237,7 @@ static boolean suryabrew_HandleEventTempMode(suryabrew* pMe, AEEEvent eCode, uin
 		//	if(pMe->headset_insert==TRUE)
 			// on the right key, start the temp sensor
 				pMe->done_sample_time=FALSE;
-			if(pMe->check_recod_fail_4times<NO_UPLOAD_FAIL)
+		//	if(pMe->check_recod_fail_4times<NO_UPLOAD_FAIL)
 			{
 		
 			DBGPRINTF("Running temp start/stop!!!");
@@ -303,6 +303,7 @@ static boolean suryabrew_HandleEventTempMode(suryabrew* pMe, AEEEvent eCode, uin
 			suryabrew_TempLoadSound(pMe);			
 			return TRUE;
 		case AVK_VOLUME_DOWN:
+		case AVK_1:
 			if (pMe->soundMode == SOUNDMODE_PLAYBACK || pMe->allow_volume == 0)
 			{
 				return TRUE;
@@ -354,6 +355,23 @@ static boolean suryabrew_HandleEventTempMode(suryabrew* pMe, AEEEvent eCode, uin
 			suryabrew_setdata(pMe);          //FOR TESTING
 			suryabrew_DBAddRecord(pMe);
 			return TRUE;
+		case AVK_2:
+			pMe->soundMode = SOUNDMODE_LOW;
+				suryabrew_TempLoadSound(pMe);
+			return TRUE;
+				case AVK_3:
+			pMe->soundMode = SOUNDMODE_MED;
+				suryabrew_TempLoadSound(pMe);
+			return TRUE;
+				case AVK_4:
+			pMe->soundMode = SOUNDMODE_HIGH;
+				suryabrew_TempLoadSound(pMe);
+			return TRUE;
+			//suryabrew_TempPlayTone(pMe);
+		/*	if(pMe->sound_play_by_key)
+				pMe->sound_play_by_key=FALSE;
+			else
+				pMe->sound_play_by_key=TRUE;*/
 		default:
 			return FALSE;
 		}
@@ -453,6 +471,8 @@ static boolean suryabrew_HandleEventSplitOnMode(suryabrew* pMe, AEEEvent eCode, 
 		DBGPRINTF("SplitOnMode: unkown mode!!!  %d",  pMe->SuryaMode);
 		return FALSE;
 	}
+
+
 
 }
 
@@ -649,7 +669,7 @@ static boolean suryabrew_HandleEvent(suryabrew* pMe, AEEEvent eCode, uint16 wPar
 boolean suryabrew_HeadphoneDetect(suryabrew *pMe)
 {
 	int nErr=0;
-	uint32   dwCaps;
+//	uint32   dwCaps;
 	AEESoundInfo soundinfo;
 	ISOUND_Get(pMe->pISound,&soundinfo);
 //	int size=sizeof(pMe->headset_insert);
@@ -662,19 +682,19 @@ boolean suryabrew_HeadphoneDetect(suryabrew *pMe)
 //		DBGPRINTF("value of headphone detected or not : %d",nErr);
 //nErr=	IMEDIA_GetMediaParm(pMe->imedia,MM_PARM_AUDIO_DEVICE,(int32 *)&dwCaps,0);
 //DBGPRINTF("imedia_getmediaparm==>%d",nErr);
-	if(/*soundinfo.eDevice==AEE_SOUND_DEVICE_HEADSET*/dwCaps==SUCCESS)
+//	if(soundinfo.eDevice==AEE_SOUND_DEVICE_HEADSET==SUCCESS)
 
 	{
-		DBGPRINTF("headphone detected");
-	pMe->headset_insert=TRUE;
+//		DBGPRINTF("headphone detected");
+//	pMe->headset_insert=TRUE;
 
 //	suryabrew_DrawTempScreen(pMe);
 	}
-	else{
+//	else{
 		pMe->headset_insert=FALSE;
 		DBGPRINTF("headphone not detected");
 		return FALSE;
-	}
+//	}
 	
 	return TRUE;
 }
@@ -797,7 +817,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->tempActive = FALSE;
 	//	pMe->playing = FALSE;
 //	pMe->soundMode = SOUNDMODE_PLAYBACK;
-	pMe->soundMode = SOUNDMODE_LOW;
+	pMe->soundMode =SOUNDMODE_LOW;
 	pMe->pIFileAudioOut = NULL;
 	pMe->check_recod_fail_4times=0;
 	pMe->maxSound = 0;
@@ -981,10 +1001,11 @@ void suryabrew_DrawTempTemp(suryabrew *pMe)
 	AECHAR szBuf[30];
 	
 	// res = (pMe->maxSound * 258 + 360000)/10000;  //y=mx+c 258 3600000
-	res = (pMe->maxSound * CALIBRATION_SCALAR + CALIBRATION_OFFSET)/CALIBRATION_DIVIDER;  //y=mx+c 258 3600000
+//	res = (pMe->maxSound * CALIBRATION_SCALAR + CALIBRATION_OFFSET)/CALIBRATION_DIVIDER;  //y=mx+c 258 3600000
+	res=suryabrew_TempCalcTemp(pMe);
 	DBGPRINTF("maxsound %d",pMe->maxSound);
 		DBGPRINTF("minsound %d",pMe->minSound);
-	DBGPRINTF("res %d \n",res);
+	DBGPRINTF("res %f \n",res);
 	WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmt, res);
 	WSPRINTF(pMe->tempDispDBG, 64, pMe->tempDispDBGFmt, pMe->maxSound, pMe->minSound, (pMe->maxSound + pMe->minSound)/2);
 	WSPRINTF(pMe->maxtempsound, 64, pMe->maxtempsoudfmt, pMe->maxSound);
@@ -996,7 +1017,7 @@ void suryabrew_DrawTempTemp(suryabrew *pMe)
 	if(pMe->Tempra_Data[pMe->temp_data_index]!=0)
 		pMe->Tempra_Data[pMe->temp_data_index]=0;
 	//	MEMSET(pMe->Tempra_Data[pMe->temp_data_index],0,sizeof(uint32));
-	pMe->Tempra_Data[pMe->temp_data_index]=(uint32)res;
+	pMe->Tempra_Data[pMe->temp_data_index]=(uint32)pMe->maxSound/*res*/;
 	DBGPRINTF("taemprature data==>%d",pMe->Tempra_Data[pMe->temp_data_index]);
 	MEMSET(pMe->Tempt_Data_str,0,5*sizeof(char));
 	SPRINTF(pMe->Tempt_Data_str,"%d",pMe->Tempra_Data[pMe->temp_data_index]);
@@ -1488,6 +1509,11 @@ void suryabrew_setdata(suryabrew *pMe)
 //	SPRINTF(*time[0],"%s",gettime.wYear);
 //	char c[sizeof(JulianType)];
 //	year=(uint32)gettime.wYear;
+
+	#ifdef AEE_SIMULATOR
+//	SPRINTF(pMe->upload_time,"2011107121121");
+	suryabrew_gettime(pMe);
+	#endif
 	if(pMe->upload_time==NULL)
 	pMe->upload_time=(char*)MALLOC(14*sizeof(char));
 	MEMSET(pMe->upload_time,0,14*sizeof(char));
@@ -1597,14 +1623,18 @@ void suryabrew_setdata(suryabrew *pMe)
 //	STRCAT(pMe->Temprature_Data,",");
 //	tmp[1]=NULL;
 	//	SPRINTF(length,"%d",pMe->Tempra_Data[i])
+		if(pMe->Tempra_Data[i]!=0)
+		{
+		
 		char c[sizeof(uint32)];
-		MEMSET(c,0,4*sizeof(char));
-		success= SNPRINTF(c,4*sizeof(char),"%d",pMe->Tempra_Data[i]);
+		MEMSET(c,0,6*sizeof(char));
+		success= SNPRINTF(c,6*sizeof(char),"%d",pMe->Tempra_Data[i]);
 		DBGPRINTF("value of c ===?%s,%d",c,success);
 		STRCAT(pMe->upload_Temprature_Data,c);
 		DBGPRINTF("pme->upload_temprature====?>",pMe->upload_Temprature_Data);
 		if(i!=SAMPLE_DURATION-1)
 		STRCAT(pMe->upload_Temprature_Data,",");
+		}
 
 
 	}

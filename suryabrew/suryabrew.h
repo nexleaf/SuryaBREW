@@ -55,8 +55,8 @@ INCLUDES AND VARIABLE DEFINITIONS
 #define	AVERGING_WINDOW 1    //in second
 #define SAMPLE_DURATION	60   //in second
 #define	PUASE_INTERVAL	240		//in second
-#define	CALIBRATION_SCALAR	449 
-#define	CALIBRATION_OFFSET	168995
+#define	CALIBRATION_SCALAR	500 
+#define	CALIBRATION_OFFSET	720000
 #define	CALIBRATION_DIVIDER 10000
 #define DEPLOYMENT_ID	   "ASTUTE"
 #define MIME_TYPE		"text/csv"
@@ -64,6 +64,25 @@ INCLUDES AND VARIABLE DEFINITIONS
 #define DEVICEID		"A100000MARTIN1"
 #define NO_UPLOAD_FAIL	3
 //////////////////////////////////////////////////////
+
+
+///////////////////////////////new changes
+#define TRA   "0.000693546"
+#define TRB   "0.000201139"
+#define TRC   "0.0000000933821"
+#define TR	"231.5k"
+#define RES1   3000
+#define RES2	0
+#define BOARDREV	2
+#define CALIBPCM	142
+#define CALIBOHMS	176261
+#define INPUTPCM 8485
+
+
+
+
+
+/////////////////////////////////new changes
 
 typedef enum
 {
@@ -230,6 +249,7 @@ typedef struct _suryabrew {
 	boolean is_database_null;
 	boolean set_data_indexid;
 	uint32  check_recod_fail_4times;
+	boolean sound_play_by_key;
 	//set data variable
 } suryabrew;
 
@@ -421,4 +441,10 @@ void copy_char_to_string(char *dest, const char *source);
 void suryabrew_FileCreateFileNamePrefix(suryabrew *pMe, char* filename);
 
 void suryabrew_uploaddata_notify(suryabrew *pMe);
+
+
+
+// in calibration.cdd
+int suryabrew_TempCalcTemp(suryabrew* pMe);
+double natural_log(const double in) ;
 #endif // SURYABREW_H_H

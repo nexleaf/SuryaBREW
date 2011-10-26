@@ -30,7 +30,7 @@ void suryabrew_TempSetActive(suryabrew* pMe, boolean active)
 
          // Unmute the microphone and earpiece
 		  
-         pMe->soundInfo.eDevice     =AEE_SOUND_DEVICE_HEADSET;//AEE_SOUND_DEVICE_STEREO_HEADSET; //AEE_SOUND_DEVICE_CURRENT; //AEE_SOUND_DEVICE_SPEAKER; //AEE_SOUND_DEVICE_CURRENT;
+         pMe->soundInfo.eDevice     =AEE_SOUND_DEVICE_CURRENT;//AEE_SOUND_DEVICE_STEREO_HEADSET; //AEE_SOUND_DEVICE_CURRENT; //AEE_SOUND_DEVICE_SPEAKER; //AEE_SOUND_DEVICE_CURRENT;
          pMe->soundInfo.eMethod     = AEE_SOUND_METHOD_VOICE;
          pMe->soundInfo.eAPath      = AEE_SOUND_APATH_MUTE; // AEE_SOUND_APATH_BOTH;
          pMe->soundInfo.eEarMuteCtl = AEE_SOUND_MUTECTL_UNMUTED;
@@ -57,7 +57,7 @@ void suryabrew_TempSetActive(suryabrew* pMe, boolean active)
 
          // Configure IVocoder
          status = IVOCODER_VocConfigure(pMe->pIVocoder, pMe->vocConfig, &pMe->vocInfo);
-
+		DBGPRINTF("value of  w/ Voc %d",status);
          // check status
          if(status != SUCCESS) {
                DBGPRINTF("Problem w/ Voc %d",status);
@@ -120,7 +120,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
    int16 tempint;
    //uint16 *u16;
    int16 max = 0;
-   int16 min = 8000;
+   int16 min = 8192;
    // rohit [9/15/2011]
 	if(pMe->Flag==FALSE)
 	  suryabrew_gettime(pMe);
@@ -131,7 +131,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 		suryabrew_DBAddRecord(pMe);
 		suryabrew_resetdata(pMe);
 	}
-	if(pMe->check_recod_fail_4times>=NO_UPLOAD_FAIL)
+	/*if(pMe->check_recod_fail_4times>=NO_UPLOAD_FAIL)
 	{
 
 			CALLBACK_Cancel(&pMe->Get_Current_TimerCB);
@@ -139,7 +139,9 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 		DBGPRINTF("Stopping temp sensing in havedtaCB");
 				suryabrew_TempSetActive(pMe,FALSE);
 				suryabrew_DrawTempScreen(pMe);
-	}
+	}*/
+	if(pMe->sound_play_by_key)
+		suryabrew_TempPlayTone(pMe);
 
 	// rohit [9/15/2011]
    // Data integrity checks
@@ -167,7 +169,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 		  //IVOCODER_VocOutWrite(pMe->pIVocoder, rate, length, pMe->frameDataOUT);
 		  i16 = (int16 *) pMe->frameDataIN;
 		  //u16 = (uint16 *) pMe->frameDataIN;
-		  //IFILE_Write(pMe->pIFileAudioOut, pMe->frameDataIN, length);
+	//	 IFILE_Write(pMe->pIFileAudioOut, pMe->frameDataIN, length);
 
 		  for (j = 0; j < length / 2; j++)
 		  {
@@ -195,7 +197,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 			  
 			  pMe->cycleCount = 0;
 			  pMe->maxSound = 0;
-			  pMe->minSound = 8000;
+			  pMe->minSound = 8192;
 		  } 
 		  if (max > pMe->maxSound)
 		  {
@@ -212,7 +214,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 		  {
 			  nErr= IVOCODER_VocOutWrite(pMe->pIVocoder, rate, length, pMe->frameDataIN);
 
-			  //DBGPRINTF("SOUNDMODE_PLAYBACK====>%d",nErr);
+			  DBGPRINTF("SOUNDMODE_PLAYBACK====>%d",nErr);
 			/*  while (i < sizeof(pMe->frameDataIN))
 				{
 					 DBGPRINTF("framdatain buffer%02X",(int)pMe->frameDataIN[i]);
@@ -220,7 +222,7 @@ static void HaveDataCB(uint16 numFrames, void * usrPtr)
 				}*/
 		  } else {
 			  nErr=IVOCODER_VocOutWrite(pMe->pIVocoder, FULL_RATE, 320, pMe->tempSoundOut);
-			  //DBGPRINTF("not playSOUNDMODE_PLAYBACK====>%d,%d",nErr,pMe->soundMode);
+			  DBGPRINTF("not playSOUNDMODE_PLAYBACK====>%d,%d",nErr,pMe->soundMode);
 			 /* while (i < sizeof(pMe->tempSoundOut))
 				{
 					 DBGPRINTF("tempsoundout buffer%02X",(int)pMe->tempSoundOut);
