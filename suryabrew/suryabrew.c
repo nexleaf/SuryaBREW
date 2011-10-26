@@ -631,6 +631,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	pMe->tempActive = FALSE;
 	//	pMe->playing = FALSE;
 	//pMe->soundMode = SOUNDMODE_PLAYBACK;
+//	pMe->soundMode = SOUNDMODE_ONE;
 	pMe->soundMode = SOUNDMODE_ONE;
 	pMe->pIFileAudioOut = NULL;
 

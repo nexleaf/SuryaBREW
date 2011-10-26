@@ -12,11 +12,68 @@ static void NeedDataCB(uint16 numFrames, void * usrPtr);
 static void PlayedDataCB(uint16 numFrames, void * usrPtr);
 static void ReadyCB(void * usrPtr);
 
+
+double natural_log(const double in)
+{
+	// Compute the natural log using newtons method!
+	// x_(n+1) = x_n - (f(x_n)/f'(x_n))
+	// where f(x) == e^x - in
+	double exp_1 = FASSIGN_STR("2.718281828");
+	double guess = FASSIGN_INT(10); // start value of 10 provides the right balance
+	double thepow = FASSIGN_INT(0);
+	int i = 0;
+	//AECHAR strout[64];
+	//FLOATTOWSTR(in, strout, 64);
+	//DBGPRINTF("input is %S", strout);
+	for (i = 0; i < 10; i++) { // do 10 iterations. tested out, seems like less is bad
+		thepow = FPOW(exp_1, guess);		
+		guess = FSUB(guess, FDIV(FSUB(thepow, in), thepow));
+	}
+	//FLOATTOWSTR(guess, strout, 64);
+	//DBGPRINTF("guess %S", strout);
+	return guess;
+}
+
 // wanted to inline, but __inline giving trouble
 int suryabrew_TempCalcTemp(suryabrew* pMe)
 {
+	//AECHAR strout[64];
+	int temp_int = 0;
+	// Convert PCM to ohms using circuit equation, formual is ((res1*inputpcm)/mkaxPCM) - (res1 + res2)
+	// res1 is from circuit
+	// res2 is currently zero... next revision of circuit will have this
+	// inputpcm is computed during calibration step
+	// maxPCM is value from audio stream
+	int res1 = 3000;
+	int res2 = 0;
+	int inputpcm = 13202;
+	double ohms_d = FASSIGN_INT((res1*inputpcm)/pMe->maxSound) - (res1 + res2);
+
+	// A, B, and C are the thermistor parameters for our particular thermistor:
+	// http://mcshaneinc.com/html/TS165_Specs.html
+	double trA = FASSIGN_STR("0.000693546");
+	double trB = FASSIGN_STR("0.000201139");
+	double trC = FASSIGN_STR("0.0000000933821");
+
+	// we need ln(ohms) and ln^3(ohms)
+	double lnohms = natural_log(ohms_d);
+	double lnohms_cubed = FPOW(lnohms, FASSIGN_INT(3));
+
+	// convert the ohms into temperature using thermistor equation
+	// T = (1/(A + B*ln(ohms) + C*ln^3(ohms)) - 273.15
+	double temp_K = FASSIGN_INT(0); // Kelvin
+	double temp_C = FASSIGN_INT(0); // Celcius
+
+	temp_K = FDIV(FASSIGN_INT(1),FADD(trA, FADD(FMUL(trB, lnohms), FMUL(trC, lnohms_cubed))));
+	temp_C  = FSUB(temp_K,FASSIGN_STR("273.15"));
+	//FLOATTOWSTR(temp_C, strout, 64);
+	//DBGPRINTF("res is %S", strout);
+	temp_int = FLTTOINT(temp_C);
+
+	return temp_int;
+	
 	// One place to calc temp from PCM values... can also use user input calibration here eventually
-	return (pMe->maxSound * 449 + 168995)/10000;
+	//return (pMe->maxSound * 449 + 168995)/10000;
 	//return (pMe->maxSound * 568 + 400396)/10000;
 	//return (pMe->maxSound * 465 + 405156)/10000;
 	//return (pMe->maxSound * 258 + 360000)/10000;
