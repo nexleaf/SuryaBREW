@@ -438,9 +438,13 @@ static boolean suryabrew_HandleEvent(suryabrew* pMe, AEEEvent eCode, uint16 wPar
         // App is told it is exiting
         case EVT_APP_STOP:
             // Add your code here...
+			if (pMe->SuryaMode == SURYAMODE_DEFAULT) {
 
-      		return(TRUE);
-
+				suryabrew_FreeSurya(pMe, 1);
+      			return(TRUE);
+			} else{
+				return FALSE;
+			}
         // App is told it is starting up
         case EVT_APP_START:                        
 
@@ -649,7 +653,7 @@ boolean suryabrew_InitAppData(suryabrew* pMe)
 	// DataLogger Init
 	pMe->dataloggerRunning = FALSE;
 	pMe->dataloggerCounter = 0; // will be set when datalogger is initialized
-	pMe->dataloggerCounterIncrementInterval = 1440000; // 8000 * 60 * 3 = 3 minutes
+	pMe->dataloggerCounterIncrementInterval = 960000; //1440000; // 8000 * 60 * 3 = 3 minutes
 	pMe->dataloggerCounterSamples = 0;
 	pMe->pIFileDatalogger = NULL;
 
@@ -778,6 +782,7 @@ void suryabrew_DrawTempTemp(suryabrew *pMe)
 {
 	//int res = (pMe->maxSound + 858) / 19;
 	int res = suryabrew_TempCalcTemp(pMe); //(pMe->maxSound * 258 + 360000)/10000;
+	pMe->tempCurr = res;
 	if (pMe->dataloggerRunning) {
 		WSPRINTF(pMe->tempDisp, 64, pMe->tempDispFmtDataLog, pMe->dataloggerCounter, res);	
 	} else {

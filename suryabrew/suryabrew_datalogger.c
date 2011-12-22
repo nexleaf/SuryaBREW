@@ -26,6 +26,8 @@ void suryabrew_DataLoggerInit(suryabrew *pMe)
 			pMe->dataloggerRunning = FALSE;
 			return;
 	}
+	// get a new number each time we are initialized so not appending.
+	suryabrew_DataLoggerIncrementCounter(pMe);
 
 	// get or create the counter value from the file
 	SPRINTF(tempstr, "%06u_dl.csv", pMe->dataloggerCounter);
@@ -72,11 +74,12 @@ void suryabrew_DataLoggerLog(suryabrew *pMe)
 		return;
 	}
 
-	temp = suryabrew_TempCalcTemp(pMe); //(pMe->maxSound * 258 + 360000)/10000;
+	//temp = suryabrew_TempCalcTemp(pMe); //(pMe->maxSound * 258 + 360000)/10000;
+	temp = pMe->tempCurr;
 
 	GETJULIANDATE(GETUTCSECONDS(), &jt);
 
-	res = SPRINTF(outstr, "%u,%u,%u,%u%02u%02u%02u%02u%02u,%d,%d,%d,%d,%d,%d\n", 
+	res = SPRINTF(outstr, "%u,%u,%u,%u%02u%02u%02u%02u%02u,%d,%d,%d,%d,%d,%d,rev3,273.15\n", 
 		pMe->dataloggerCounter,
 		GETUTCSECONDS(),
 		GETUPTIMEMS(),
@@ -84,9 +87,9 @@ void suryabrew_DataLoggerLog(suryabrew *pMe)
 		temp,
 		pMe->maxSound,
 		pMe->minSound,
-		449,
-		168995,
-		10000);
+		10000,
+		0,
+		2580);
 
 	res2 = IFILE_Write(pMe->pIFileDatalogger, outstr, res);
 	//DBGPRINTF("Wrote %d of %d bytes to log", res2, res);
@@ -108,9 +111,9 @@ void suryabrew_DataLoggerIncrementCounter(suryabrew *pMe)
 	int nErr = 0;
 	IFile *cfile = NULL;
 	
-	if (pMe->dataloggerRunning == FALSE) {
-		return;
-	}
+	//if (pMe->dataloggerRunning == FALSE) {
+	//	return;
+	//}
 
 	// overwrites whats there
 	cfile = suryabrew_FileCreateFile(pMe, pMe->DatalogCounterFilename, NULL);

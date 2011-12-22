@@ -157,6 +157,7 @@ typedef struct _suryabrew {
 	int16 minSound;
 	int cycleMax;
 	int cycleCount;
+	int tempCurr;
     AECHAR tempDisp[64];
 	AECHAR tempDispDBG[64];
 	AECHAR tempDispFmt[16];

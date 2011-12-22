@@ -37,17 +37,20 @@ double natural_log(const double in)
 // wanted to inline, but __inline giving trouble
 int suryabrew_TempCalcTemp(suryabrew* pMe)
 {
-	//AECHAR strout[64];
+	AECHAR strout[64];
 	int temp_int = 0;
 	// Convert PCM to ohms using circuit equation, formual is ((res1*inputpcm)/mkaxPCM) - (res1 + res2)
 	// res1 is from circuit
 	// res2 is currently zero... next revision of circuit will have this
 	// inputpcm is computed during calibration step
 	// maxPCM is value from audio stream
-	int res1 = 3000;
+	int res1 = 10000;
 	int res2 = 0;
-	int inputpcm = 13202;
-	double ohms_d = FASSIGN_INT((res1*inputpcm)/pMe->maxSound) - (res1 + res2);
+	int inputpcm = 2508;
+	double ohms_d = FASSIGN_INT(((res1*inputpcm)/pMe->maxSound) - (res1 + res2));
+	//DBGPRINTF("Maxsnd is %d, res: %d", pMe->maxSound, ((res1*inputpcm)/pMe->maxSound) - (res1 + res2));
+	//FLOATTOWSTR(ohms_d, strout, 64);
+	//DBGPRINTF("ohms_d is %S", strout);
 
 	// A, B, and C are the thermistor parameters for our particular thermistor:
 	// http://mcshaneinc.com/html/TS165_Specs.html
@@ -58,6 +61,10 @@ int suryabrew_TempCalcTemp(suryabrew* pMe)
 	// we need ln(ohms) and ln^3(ohms)
 	double lnohms = natural_log(ohms_d);
 	double lnohms_cubed = FPOW(lnohms, FASSIGN_INT(3));
+	//FLOATTOWSTR(lnohms, strout, 64);
+	//DBGPRINTF("lnohms is %S", strout);
+	//FLOATTOWSTR(lnohms_cubed, strout, 64);
+	//DBGPRINTF("lnohms^3 is %S", strout);
 
 	// convert the ohms into temperature using thermistor equation
 	// T = (1/(A + B*ln(ohms) + C*ln^3(ohms)) - 273.15
@@ -66,8 +73,8 @@ int suryabrew_TempCalcTemp(suryabrew* pMe)
 
 	temp_K = FDIV(FASSIGN_INT(1),FADD(trA, FADD(FMUL(trB, lnohms), FMUL(trC, lnohms_cubed))));
 	temp_C  = FSUB(temp_K,FASSIGN_STR("273.15"));
-	//FLOATTOWSTR(temp_C, strout, 64);
-	//DBGPRINTF("res is %S", strout);
+	FLOATTOWSTR(temp_C, strout, 64);
+	DBGPRINTF("temp_c is %S", strout);
 	temp_int = FLTTOINT(temp_C);
 
 	return temp_int;
